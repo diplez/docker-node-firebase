@@ -1,0 +1,28 @@
+version: '3.3'
+
+services: 
+  node-firebase:
+    build: 
+      context: ./serve-aisport
+      labels: 
+        com.diplez.descripcion: "Serve Node Firebase"
+        com.diplez.titulo: "Aisport Serve"    
+    working_dir: /home/serve_aisports/    
+    command: nodemon -L serve-aisport/index.js # SE COLOCA EL NOMBRE DE index.js de la maquina, no del host o imagen docker
+    environment:
+      - NODE_ENV=development
+    networks: 
+      - RedNode
+    ports: 
+      - "3000:3000"
+    volumes: 
+      - ./:/home/serve_aisports/      
+      - /home/serve_aisports/node_modules  # se coloca las dependencias que se usan al ejecutar proyecto en este caso  node_modules
+    stdin_open: true
+    tty: true
+
+networks:
+  RedNode:
+
+volumes: 
+  serve-aisport:     

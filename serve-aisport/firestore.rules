@@ -1,0 +1,24 @@
+
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /bulletinBoard/{note} {
+      // Anybody can read these messages, as long as they're signed in.
+      allow read, write: if request.auth != null;
+    }
+    match /users/{userID}/myNotes/{note} {
+      // Anybody can write to their own notes section
+      allow read, write: if request.auth.uid == userID;
+    }
+    match /spaceships/{spaceship} {
+      allow read;
+      // Spaceship documents can only contain three fields -- a name, a catchy
+      //DETIENE EL REGISTRO DE DATOS
+      allow write: if request.resource.data.size() == 3 &&
+                   request.resource.data.name is string &&
+                   request.resource.data.slogan is string &&
+                   request.resource.data.cargo is int &&
+                   request.resource.data.cargo > 6500;
+    }
+  }
+}
