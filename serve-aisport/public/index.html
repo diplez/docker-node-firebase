@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyBHmBZJ2Beh5NLVxHLTdsXEvsOKtRyXEuE",
+                authDomain: "proyectolomo.firebaseapp.com",
+                databaseURL: "https://proyectolomo.firebaseio.com",
+                projectId: "proyectolomo",
+                storageBucket: "proyectolomo.appspot.com",
+                messagingSenderId: "388049053541"
+            };
+            firebase.initializeApp(config);
+
+            /** CONFIGURACION PROYECTO**/            
+           const db = firebase.firestore();
+           const settings = {/** su configuración ... **/ timestampsInSnapshots: true};
+           db.settings (settings);
+            /**
+            db.collection("messages").add({
+                first: "Ada",
+                last: "Lovelace",
+                born: 1815
+            })
+            .then(function(docRef) {
+                console.log("Document written with ID: ", docRef.id);
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            });
+            **/
+            coords1 = {
+                latitude: -3.992937,
+                longitude: -79.200255
+            }
+            var addMessage = firebase.functions().httpsCallable('CFFiltroPuntuacion');
+            addMessage(coords1).then(function(result) {
+                // Read result of the Cloud Function.
+                var sanitizedMessage = result.data.datos;
+                console.log(sanitizedMessage)
+                document.getElementById('datosserver').innerHTML = sanitizedMessage
+                }).catch(function(error) {
+                // Getting the Error details.
+                var code = error.code;
+                var message = error.message;
+                var details = error.details;            
+                document.getElementById('mensajesError').innerHTML = message
+            });
+        </script>
+    </head>
+    <body>
+        <h1>dasdsdsa</h1>
+        Datos:  <section id='datosserver'></section>
+        Errores:  <section id='mensajesError'></section>
+    </body>
+    <script>
+        coords1 = {
+            latitude: -3.992937,
+            longitude: -79.200255
+        }
+
+        coords2 = {
+            latitude: -4.016437,
+            longitude: -79.208368
+        }
+        function haversine_distance(coords1, coords2) {
+            
+            function toRad(x) {
+                return x * Math.PI / 180;
+            }
+
+            var dLat = toRad(coords2.latitude - coords1.latitude);
+            var dLon = toRad(coords2.longitude - coords1.longitude)
+
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(coords1.latitude)) * 
+                Math.cos(toRad(coords2.latitude)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+            return 12742 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+        //alert(haversine_distance(coords1,coords2))
+        /**
+        datos = []
+        datosIndependientes1 = {nombre:"diego",apellido:"apellido"}
+        datosIndependientes2 = {nombre:"diego",apellido:"apellido"}
+        datos.push(datosIndependientes1)
+        datos.push(datosIndependientes2)
+            
+        for(d in datos){
+            console.log(datos[d])
+        }
+        **/
+        
+    </script>
+</html>
