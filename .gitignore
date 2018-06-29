@@ -65,3 +65,11 @@ typings/
 
 # Node node_modules
 /serve-aisport/functions/node_modules
+
+/aisport/functions/node_modules
+
+/prueba-firebase/*
+
+/cloudfuctions/*
+
+firebase-aisport.rar
