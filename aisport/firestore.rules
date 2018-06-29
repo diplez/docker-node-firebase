@@ -1,0 +1,66 @@
+service cloud.firestore {
+
+   match /databases/{database}/documents {    
+
+    // CUANDO SE ESCRIBE EN COLECCION CENTRO DEPORTIVO 
+    // SE VALIDARA DATOS AL ESCRIBIR    
+    match /centro_deportivo/{ID_centro} {
+      // AL LEER NO SE COLOCARA NINGUNA RESTRICCION
+      allow read;          
+      // AL ESCRIBIR SE COLOCARA LAS RESTRICCIONES COMO
+      allow write: if request.resource.data.nombre is string &&
+                   request.resource.data.nombre.size() < 100 &&
+                   request.resource.data.nombre != '' &&
+                   request.resource.data.telefono is string &&
+                   request.resource.data.telefono.size() == 10 &&
+                   request.resource.data.telefono != '' &&
+                   request.resource.data.descripcion is string &&
+                   request.resource.data.descripcion.size() <= 255;
+    }
+
+    // CUANDO SE ESCRIBE EN COLECCION CANCHA DE CENTRO DEPORTIVO
+    // SE VALIDARA DATOS AL ESCRIBIR        
+    match /centro_deportivo/{ID_centro}/cancha/{ID_cancha} {
+      // AL LEER NO SE COLOCARA NINGUNA RESTRICCION
+      allow read;          
+      // AL ESCRIBIR SE COLOCARA LAS RESTRICCIONES COMO
+      allow write: if request.resource.data.nombre is string &&
+                   request.resource.data.nombre.size() < 100 &&
+                   request.resource.data.nombre != '' &&
+                   request.resource.data.numero_jugadores is string &&
+                   request.resource.data.numero_jugadores != '' &&
+                   request.resource.data.precio_dia is int &&
+                   request.resource.data.precio_dia > 0 &&
+                   request.resource.data.precio_noche is int &&
+                   request.resource.data.precio_noche > 0 &&
+                   request.resource.data.piso is string;                   
+    }
+
+    // CUANDO SE ESCRIBE EN COLECCION HORARIO DE CENTRO DEPORTIVO
+    // SE VALIDARA DATOS AL ESCRIBIR        
+    match /centro_deportivo/{ID_centro}/horario/{ID_horario} {
+      // AL LEER NO SE COLOCARA NINGUNA RESTRICCION
+      allow read;          
+      // AL ESCRIBIR SE COLOCARA LAS RESTRICCIONES COMO
+      allow write: if request.resource.data.nombre is string &&
+                   request.resource.data.nombre.size() < 100 &&
+                   request.resource.data.nombre != '' &&
+                   request.resource.data.hora_fin is int &&
+                   request.resource.data.hora_inicio is int;                 
+    }
+
+    // CUANDO SE ESCRIBE EN COLECCION REDSOCIAL DE CENTRO DEPORTIVO
+    // SE VALIDARA DATOS AL ESCRIBIR        
+    match /centro_deportivo/{ID_centro}/red_social/{ID_redSocial} {
+      // AL LEER NO SE COLOCARA NINGUNA RESTRICCION
+      allow read;          
+      // AL ESCRIBIR SE COLOCARA LAS RESTRICCIONES COMO
+      allow write: if request.resource.data.nombre is string &&
+                   request.resource.data.nombre.size() < 100 &&
+                   request.resource.data.nombre != '' &&
+                   request.resource.data.url is string &&
+                   request.resource.data.url != '' &&
+                   request.resource.data.activado is bool;
+    }
+  }
+}

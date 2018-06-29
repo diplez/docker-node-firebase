@@ -1,0 +1,186 @@
+<html>
+    <head>
+        <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            /**var config = {
+                apiKey: "AIzaSyBHmBZJ2Beh5NLVxHLTdsXEvsOKtRyXEuE",
+                authDomain: "proyectolomo.firebaseapp.com",
+                databaseURL: "https://proyectolomo.firebaseio.com",
+                projectId: "proyectolomo",
+                storageBucket: "proyectolomo.appspot.com",
+                messagingSenderId: "388049053541"
+            };**/
+            var config = {
+                apiKey: "AIzaSyApP6b8F_67XzQRefGdS-FkslfBuJyd8-4",
+                authDomain: "sitesport-204402.firebaseapp.com",
+                databaseURL: "https://sitesport-204402.firebaseio.com",
+                projectId: "sitesport-204402",
+                storageBucket: "sitesport-204402.appspot.com",
+                messagingSenderId: "138055446583"
+            };
+            firebase.initializeApp(config);
+
+            /** CONFIGURACION PROYECTO**/            
+           const db = firebase.firestore();
+           const settings = {/** su configuración ... **/ timestampsInSnapshots: true};
+           db.settings (settings);
+            /**
+            db.collection("messages").add({
+                first: "Ada",
+                last: "Lovelace",
+                born: 1815
+            })
+            .then(function(docRef) {
+                console.log("Document written with ID: ", docRef.id);
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            });
+            **/
+           /**
+            coords1 = {
+                latitude: -3.992937,
+                longitude: -79.200255
+            }**/
+            filtros = {
+                puntuaciones: false,
+                abiertos: true,
+                cercanos: false,
+                latitude: -3.992937,
+                longitude: -79.200255
+            }
+            var addMessage = firebase.functions().httpsCallable('FiltrosCentrosDeportivos');
+            addMessage(filtros).then(function(result) {
+                // Read result of the Cloud Function.
+                var sanitizedMessage = result.data.datos;
+                console.log(sanitizedMessage)
+                document.getElementById('datosserver').innerHTML = sanitizedMessage
+                }).catch(function(error) {
+                // Getting the Error details.
+                var code = error.code;
+                var message = error.message;
+                var details = error.details;            
+                document.getElementById('mensajesError').innerHTML = message
+            });
+
+            d = new Date()
+            utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+            var horaAc = new Date(utc + (3600000*(-5.0)));   
+            fecha = (horaAc.getUTCMonth()+1)+'/'+horaAc.getDate()+'/'+horaAc.getFullYear()+' '
+            dias = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];            
+            
+            //"use strict";
+
+            function CheckIfFriendsPending(abierto) {
+                return new Promise(function (resolve, reject) {
+                    db.collection('centro_deportivo').get().
+                    then((querySnapshot) => {                        
+                        querySnapshot.forEach((doc) => {            
+                            if(doc.id.toString().toLowerCase()===dias[horaAc.getDay()]){
+                                var horaDBInicio = new Date(fecha + doc.data().hora_inicio);
+                                var horaDBFin = new Date(fecha+ doc.data().hora_fin);                                
+                                if(horaDBFin >= horaAc && horaDBInicio <= horaAc){
+                                    abierto = true;
+                                    //console.log('Esta Abierto '+abierto)
+                                }else{
+                                    //console.log('Esta cerrado')
+                                    abierto = false;
+                                }
+                            }            
+                        });                                                                
+                        resolve({datos:abierto});
+                    }).catch((error) => {        
+                        throw new functions.https.HttpsError('unknown', error.message, error);                        
+                    }); 
+                });
+            }
+
+            
+            CheckIfFriendsPending(false)
+                .then(function(obj) { console.log('Yes '+obj.datos); })
+                .catch(function(obj) { console.log('No dsadsa'+obj.datos); });            
+            
+            /** 
+            console.log(data +  "  diego")
+            
+            var promise1 = Promise.resolve(abierto);
+            promise1.then(function(value) {
+                console.log(abierto+"asdsa")            
+            // expected output: Array [1, 2, 3]
+            });
+            console.log(abierto+"asdsa"+'diego')            
+            **/
+            
+        </script>
+    </head>
+    <body>
+        <h1>dasdsdsa</h1>
+        Datos:  <section id='datosserver'></section>
+        Errores:  <section id='mensajesError'></section>
+    </body>
+    <script>
+        coords1 = {
+            latitude: -3.992937,
+            longitude: -79.200255
+        }
+
+        coords2 = {
+            latitude: -4.016437,
+            longitude: -79.208368
+        }
+        function haversine_distance(coords1, coords2) {
+            
+            function toRad(x) {
+                return x * Math.PI / 180;
+            }
+
+            var dLat = toRad(coords2.latitude - coords1.latitude);
+            var dLon = toRad(coords2.longitude - coords1.longitude)
+
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(coords1.latitude)) * 
+                Math.cos(toRad(coords2.latitude)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+            return 12742 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+        //alert(haversine_distance(coords1,coords2))
+        /**
+        datos = []
+        datosIndependientes1 = {nombre:"diego",apellido:"apellido"}
+        datosIndependientes2 = {nombre:"diego",apellido:"apellido"}
+        datos.push(datosIndependientes1)
+        datos.push(datosIndependientes2)
+            
+        for(d in datos){
+            console.log(datos[d])
+        }
+        **/
+        d = new Date()
+        utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        var horaAc = new Date(utc + (3600000*(-5.0)));   
+        fecha = (horaAc.getUTCMonth()+1)+'/'+horaAc.getDate()+'/'+horaAc.getFullYear()+' '
+        
+        //fecha = (horaAc.getUTCMonth()+1)+'/'+horaAc.getDate()+'/'+horaAc.getFullYear()+' '
+
+        //fecha = (horaAc.getUTCMonth()+1)+'/'+horaAc.getUTCDate()+'/'+horaAc.getUTCFullYear()+' '
+        //console.log(fecha)
+        
+
+        var horaDBInicio = new Date(fecha+ "08:00");        
+        var horaDBFin = new Date(fecha+'23:16');            
+
+        //console.log(fecha)
+        //console.log(horaAc)
+        dias = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+        //console.log(dias[horaAc.getDay()] +" "+horaAc.getDay())
+        //console.log(horaAc)
+
+        if(horaDBFin >= horaAc && horaDBInicio <= horaAc){
+            //console.log("ento") 
+        }  
+        //horaDBInicio <= horaAc &&          
+        
+    </script>
+</html>
